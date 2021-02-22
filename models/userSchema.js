@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const crypto = require("crypto");
+const { v4: uuidv4 } = require("uuid");
 
 // MANDATORY:fullname,email,password,userhandle
 
@@ -49,23 +51,27 @@ const userSchema = new mongoose.Schema(
       type: String,
       minlength: 10,
       maxlength: 13,
+      sparse: true,
       unique: true,
     },
-    favourite: {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "Post",
-      unique,
-    },
+    favourite: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "Post",
+      },
+    ],
     folowing: [
       {
         type: mongoose.SchemaTypes.ObjectId,
         ref: ["User"],
       },
     ],
-    social_links: {
-      type: String,
-      unique: true,
-    },
+    social_links: [
+      {
+        type: String,
+        sparse: true,
+      },
+    ],
     projects: [
       {
         type: mongoose.SchemaTypes.ObjectId,
@@ -75,7 +81,6 @@ const userSchema = new mongoose.Schema(
     college: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "College",
-      unique: true,
     },
   },
   { timestamps: true }

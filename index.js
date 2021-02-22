@@ -4,32 +4,8 @@ const mongoose = require("mongoose");
 require("colors");
 require("dotenv").config();
 
-const { Post } = require("./models/postSchema");
-
-const typeDefs = gqltag`
- type Post{
-    id:ID!
-    title:String!
-    content:String!
-    postedBy:String!
-}
-  type Query {
-    getPosts:[Post]
-  }
-`;
-
-const resolvers = {
-  Query: {
-    async getPosts() {
-      try {
-        const posts = await Post.find({});
-        return posts;
-      } catch (err) {
-        throw err;
-      }
-    },
-  },
-};
+const resolvers = require("./graphql/resolvers");
+const typeDefs = require("./graphql/typeDefs");
 
 const server = new ApolloServer({
   typeDefs,
