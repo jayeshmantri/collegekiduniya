@@ -22,6 +22,12 @@ const projectSchema = new mongoose.Schema(
         contentType: String,
       },
     ],
+    likes: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );

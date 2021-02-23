@@ -10,10 +10,12 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    likes: {
-      type: Number,
-      min: 0,
-    },
+    likes: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "User",
+      },
+    ],
     photos: [
       {
         type: Buffer,

@@ -105,6 +105,7 @@ function generateToken(user) {
       id: user.id,
       email: user.email,
       userhandle: user.userhandle,
+      role: user.userrole,
     },
     process.env.JWT_SECRET,
     {

@@ -6,6 +6,8 @@ const typeDefs = gql`
     title: String!
     content: String!
     postedBy: String!
+    createdAt: String!
+    updatedAt: String!
   }
   type User {
     id: ID!
@@ -25,11 +27,14 @@ const typeDefs = gql`
   }
   type Query {
     getPosts: [Post]
+    getPost(postId: ID!): Post
     getUsers: [User]
   }
   type Mutation {
     register(registerInput: RegisterInput): User!
     login(userhandle: String, password: String!): User!
+    createPost(content: String!, title: String!): Post!
+    deleatePost(postId: ID!): String!
   }
 `;
 
