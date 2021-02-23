@@ -21,7 +21,14 @@ module.exports.isAuthenticated = (context) => {
   }
 };
 
+module.exports.isRCA = (user) => {
+  return user.role === "RCA";
+};
+
 module.exports.isRCS = (user) => {
-  console.log(user);
-  return false;
+  return user.role === "RCS";
+};
+
+module.exports.isADMIN = (user) => {
+  return user.role === "ADMIN";
 };

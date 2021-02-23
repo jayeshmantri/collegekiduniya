@@ -71,9 +71,10 @@ module.exports = {
         throw new UserInputError("Errors", { errors });
       }
       //TODO: Make sure doesnot already exist
-      User.find({ userhandle }).then((user) => {
-        console.log(user);
-      });
+      const user = await User.findOne({ userhandle });
+      if (user) {
+        throw new UserInputError("User already exists");
+      }
       // create the user
 
       const newuser = new User({
