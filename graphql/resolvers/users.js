@@ -20,6 +20,19 @@ module.exports = {
         throw err;
       }
     },
+    async getUser(parent, args, context, info) {
+      const { userId } = args;
+      try {
+        const user = await User.findOne({ _id: userId });
+        console.log(user);
+        if (!user) {
+          throw new Error("User not found");
+        }
+        return user;
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
   },
   Mutation: {
     async login(parent, args, context, info) {

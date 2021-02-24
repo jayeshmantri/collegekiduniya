@@ -1,17 +1,22 @@
 const { AuthenticationError, UserInputError } = require("apollo-server");
 const { Post } = require("../../models/postSchema");
+const { Comment } = require("../../models/commentSchema");
 const {
   isAuthenticated,
   isRCS,
   isADMIN,
   isRCA,
 } = require("../../utils/checkAuthenticity");
+const { validateComment } = require("../../utils/validators");
+
 module.exports = {
   Query: {
     async getPost(parent, args, context, info) {
       const { postId } = args;
       try {
-        const post = await Post.findById(postId).populate("postedBy likes");
+        var post = await Post.findById(postId).populate(
+          "postedBy likes comments"
+        );
         if (post) {
           return post;
         } else {
@@ -38,10 +43,8 @@ module.exports = {
       if (!post) {
         throw new Error("Post not found");
       }
-      if (post.likes.find((like) => like.userhandle === user.userhandle)) {
-        post.likes = post.likes.filter(
-          (like) => like.userhandle !== user.userhandle
-        );
+      if (post.likes.find((like) => like.id === user.id)) {
+        post.likes = post.likes.filter((like) => like.id !== user.id);
       } else {
         post.likes.push(user.id);
       }
@@ -84,6 +87,49 @@ module.exports = {
         if (post.postedBy.toString() === user.id || isADMIN(user)) {
           await post.delete();
           return "Post deleted successfully";
+        } else {
+          throw new AuthenticationError(
+            "Action NOT ALLOWED/YOU ARE NOT AUTHORIZED"
+          );
+        }
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    async createComment(parent, args, context, info) {
+      const { postId, body } = args;
+      const { errors, valid } = validateComment(body);
+      const user = isAuthenticated(context);
+      if (!valid) {
+        throw new UserInputError("Errors", { errors });
+      }
+      try {
+        const post = await Post.findOne({ _id: postId });
+        if (!post) {
+          throw new Error("Post not found");
+        }
+        const newComment = new Comment({ body: body, postedBy: user.id });
+        await newComment.save();
+        post.comments.push(newComment.id);
+        await post.save();
+        return newComment;
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    async deleteComment(parent, args, context, info) {
+      const { commentId } = args;
+      const user = isAuthenticated(context);
+      try {
+        const comment = await Comment.findOne({ _id: commentId }).populate(
+          "postedBy"
+        );
+        if (!comment) {
+          throw new Error("Comment not found");
+        }
+        if (comment.postedBy.userhandle === user.userhandle || isADMIN(user)) {
+          await comment.delete();
+          return "Comment deleted successfully";
         } else {
           throw new AuthenticationError(
             "Action NOT ALLOWED/YOU ARE NOT AUTHORIZED"

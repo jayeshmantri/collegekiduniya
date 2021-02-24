@@ -49,3 +49,14 @@ module.exports.validateLoginInput = (userhandle, password) => {
     valid: Object.keys(errors).length < 1,
   };
 };
+
+module.exports.validateComment = (body) => {
+  const errors = {};
+  if (body.trim() === "") {
+    errors.body = "comment must not be empty";
+  }
+  return {
+    errors,
+    valid: Object.keys(errors).length < 1,
+  };
+};
